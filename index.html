@@ -4,6 +4,21 @@
     <title>PacWar</title>
   </head>
   <body style="margin: 0px; padding: 0px">
+	<div id="controls" style="text-align: center">
+	  <span>Blue Gene: <input type="text" list="genes" id="gene1" onChange="resetWorld()" maxlength="50" size="50" value="11111111111111111111111111111111111111111111111111" /></span><br/>
+	  <span>Red Gene: <input type="text" list="genes" id="gene2" onChange="resetWorld()" maxlength="50" size="50" value="33333333333333333333333333333333333333333333333333" /></span><br/>
+	  <datalist id="genes">
+	  </datalist>
+      <div style="padding: 5px">
+	    <button onclick="step()" style="width: 100px">Step</button>
+        <button onclick="run()" style="width: 100px">Run</button>
+	    <button onclick="stop()" style="width: 100px">Stop</button>
+	  </div>
+      <br/>
+	  <span style="color: #00007f; padding: 0px 40px" id="team0Mites">Blue Mites: 1</span>
+	  <span>Round <span id="frameno">0</span></span>
+	  <span style="color: #7f0000; padding: 0px 40px" id="team1Mites">Red Mites: 1</span>
+	</div>
     <canvas id="drawable"></canvas>
   </body>
 </html>
