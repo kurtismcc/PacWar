@@ -7,7 +7,11 @@ var roundElem;
 var team0ScoreElem;
 var team1ScoreElem;
 
-function makeSimulator(ctx, cellSize, boardWidth, boardHeight, gene1, gene2)
+var cellSize;
+var boardWidth = 19;
+var boardHeight = 9;
+
+function makeSimulator(ctx, gene1, gene2)
 {
 	var size = (boardWidth + 2) * (boardHeight + 2);
 	var worldCurrent = new Uint8Array(new ArrayBuffer(size));
@@ -74,17 +78,17 @@ function makeSimulator(ctx, cellSize, boardWidth, boardHeight, gene1, gene2)
 	function drawEmpty(cellX, cellY)
 	{
 		ctx.beginPath();
-		ctx.fillStyle = "#007fff";
-		ctx.arc((cellX + .5) * cellSize, (cellY + .5) * cellSize, cellSize / 8, 0, 2.0 * Math.PI);
+		ctx.fillStyle = "#60cfff";
+		ctx.arc((cellX + .5) * cellSize, (cellY + .5) * cellSize, cellSize / 10, 0, 2.0 * Math.PI);
 		ctx.fill();
 	}
 	
 	function drawPacMite(cellX, cellY, age, team, direction)
 	{
 		if(0 === team)
-			ctx.fillStyle = "#0000af";
+			ctx.fillStyle = "#7070ff";
 		else
-			ctx.fillStyle = "#af0000";
+			ctx.fillStyle = "#ff7070";
 
 		// position pacMite
 		var pointAt = 2.0 * Math.PI - direction * Math.PI / 2.0;
@@ -103,7 +107,7 @@ function makeSimulator(ctx, cellSize, boardWidth, boardHeight, gene1, gene2)
 		var step = radius / 4.0;
 		for(var i = 0; i < age; ++i) 
 		{
-			ctx.strokeStyle = "white";
+			ctx.strokeStyle = "#252526";
 			ctx.beginPath();
 			ctx.arc(centerX, centerY, step * (i + 1), 0, Math.PI * 2.0);
 			ctx.closePath();
@@ -240,7 +244,7 @@ function makeSimulator(ctx, cellSize, boardWidth, boardHeight, gene1, gene2)
 	
 	function drawWorld()
 	{
-		ctx.fillStyle = "#ffffff";
+		ctx.fillStyle = "#252526";
 		ctx.fillRect(0, 0, boardWidth * cellSize, boardHeight * cellSize);
 		var team0Score = 0;
 		var team1Score = 0;
@@ -265,8 +269,8 @@ function makeSimulator(ctx, cellSize, boardWidth, boardHeight, gene1, gene2)
 			}
 		}
 		roundElem.innerHTML = roundNumber;
-		team0ScoreElem.innerHTML = "Blue Score: " + team0Score;
-		team1ScoreElem.innerHTML = "Red Score: " + team1Score;
+		team0ScoreElem.innerHTML = team0Score;
+		team1ScoreElem.innerHTML = team1Score;
 		return team0Score !== 0 && team1Score !== 0 && 500 > roundNumber;
 	}
 	
@@ -304,7 +308,6 @@ var genes =
 [
   "11111111111111111111111111111111111111111111111111",
   "33333333333333333333333333333333333333333333333333",
-  "03100000000020103033311121121111222122131130221131",
   "03100000000020103033311121121111222122131130221131",
   "01310000111120010301133323323322222322213313313313",
   "10320000111122223303112212211222222211300313310300",
@@ -347,19 +350,27 @@ function resetWorld()
 	team0ScoreElem = document.getElementById('team0Mites');
 	team1ScoreElem = document.getElementById('team1Mites');
 	var canvas = document.getElementById('drawable');
-	var boardWidth = 19;
-	var boardHeight = 9;
-	var cellSizeWidth = window.innerWidth / boardWidth;
-	var cellSizeHeight = window.innerHeight / boardHeight;
-	var cellSize = Math.min(cellSizeWidth, cellSizeHeight) | 0;
-	canvas.height = cellSize * boardHeight;
-	canvas.width = cellSize * boardWidth;
+	onResize();
 	var ctx = canvas.getContext('2d');
 	var gene1 = document.getElementById('gene1').value;
 	var gene2 = document.getElementById('gene2').value;
-	simulator = makeSimulator(ctx, cellSize, boardWidth, boardHeight, gene1, gene2);
+	simulator = makeSimulator(ctx, gene1, gene2);
 	simulator.drawWorld();
 }
+
+function onResize()
+{
+	var canvas = document.getElementById('drawable');
+	var cellSizeWidth = window.innerWidth / boardWidth;
+	var cellSizeHeight = window.innerHeight / boardHeight;
+	cellSize = Math.min(cellSizeWidth, cellSizeHeight) | 0;
+	canvas.height = cellSize * boardHeight;
+	canvas.width = cellSize * boardWidth;
+	if(undefined !== simulator)
+		simulator.drawWorld();
+}
+
+window.onresize = onResize;
 
 window.onload = function()
 {
@@ -382,7 +393,7 @@ function step()
 	simulator.drawWorld();
 }
 
-function run()
+function run(sleepTime)
 {	
 	function doStep()
 	{
@@ -390,7 +401,7 @@ function run()
 			return;
 		simulator.step();
 		shouldStop = !(simulator.drawWorld());
-		window.setTimeout(doStep, 100);
+		window.setTimeout(doStep, sleepTime);
 	};
 
 	shouldStop = false;
@@ -400,4 +411,16 @@ function run()
 function stop()
 {
 	shouldStop = true;
+}
+
+function runFast()
+{
+	stop();
+	run(100);
+}
+
+function runSlow()
+{
+	stop();
+	run(666);
 }
