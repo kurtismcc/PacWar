@@ -384,43 +384,48 @@ window.onload = function()
 	resetWorld();
 };
 
-var shouldStop = true;
+var runCount = 0;
 
 function step()
 {
-	shouldStop = true;
+	runCount++;
 	simulator.step();
 	simulator.drawWorld();
 }
 
 function run(sleepTime)
 {	
+	var myRunNumber = ++runCount;
+
 	function doStep()
 	{
-		if(shouldStop)
+		if(runCount != myRunNumber)
 			return;
 		simulator.step();
-		shouldStop = !(simulator.drawWorld());
+		if(!(simulator.drawWorld()))
+		{
+			myRunNumber = 0;
+			return;
+		}
 		window.setTimeout(doStep, sleepTime);
 	};
 
-	shouldStop = false;
 	doStep();
 }
 
 function stop()
 {
-	shouldStop = true;
+	runCount++;
 }
 
 function runFast()
 {
 	stop();
-	run(100);
+	window.setTimeout(function() { run(100) }, 100);
 }
 
 function runSlow()
 {
 	stop();
-	run(666);
+	window.setTimeout(function() { run(666) }, 100);
 }
