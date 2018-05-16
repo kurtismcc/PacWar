@@ -8,8 +8,8 @@ var team0ScoreElem;
 var team1ScoreElem;
 
 var cellSize;
-var boardWidth = 19;
-var boardHeight = 9;
+let boardWidth = 19;
+let boardHeight = 9;
 
 function makeSimulator(ctx, gene1, gene2)
 {
